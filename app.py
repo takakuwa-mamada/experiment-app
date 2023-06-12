@@ -23,7 +23,7 @@ login = LoginManager(app)
 
 
 class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128))
     # 認証を行うためメールアドレスとパスワードカラムを追加
     mail = db.Column(db.String(128), unique=True)
@@ -36,19 +36,17 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
             return check_password_hash(self.password, password)
 
+class QuizSet(db.Model):
 
 @login.user_loader
-def load_user(id):
-    # ログイン機能からidを受け取った際、DBからそのユーザ情報を検索し、返す
-    return User.query.get(int(id))
-
-
+def load_user(user_id):
+    # ログイン機能からuser_idを受け取った際、DBからそのユーザ情報を検索し、返す
+    return User.query.get(int(user_id))
 
 @app.route("/",methods=['GET'])
 @login_required
 def index_get():
     return render_template('index.html')
-
 
 @app.route('/login', methods=['GET'])
 def login_get():
@@ -59,7 +57,6 @@ def login_get():
   
   # loginページのテンプレートを返す
   return render_template('login.html')
-
 
 @app.route('/login', methods=['POST'])
 def login_post():
@@ -85,7 +82,6 @@ def logout():
   # トップページにリダイレクト
   return redirect(url_for('index_get'))
 
-
 @app.route("/users",methods=['GET'])
 def users_get():
     users = User.query.all()
@@ -104,25 +100,25 @@ def users_post():
     return redirect(url_for('users_get'))
 
 
-@app.route("/users/<id>",methods=['GET'])
+@app.route("/users/<user_id>",methods=['GET'])
 @login_required
-def users_id_get(id):
-    if str(current_user.id) != str(id):
+def users_id_get(user_id):
+    if str(current_user.user_id) != str(user_id):
         return Response(response="他人の個別ページは開けません", status=403)
-    user = User.query.get(id)
+    user = User.query.get(user_id)
     return render_template('users_id_get.html', user=user)
 
-@app.route("/users/<id>/edit",methods=['POST'])
-def users_id_post_edit(id):
-    user = User.query.get(id)
+@app.route("/users/<user_id>/edit",methods=['POST'])
+def users_id_post_edit(user_id):
+    user = User.query.get(user_id)
     user.name = request.form["user_name"]
     db.session.merge(user)
     db.session.commit()
     return redirect(url_for('users_get'))
 
-@app.route("/users/<id>/delete",methods=['POST'])
-def users_id_post_delete(id):
-    user = User.query.get(id)
+@app.route("/users/<user_id>/delete",methods=['POST'])
+def users_id_post_delete(user_id):
+    user = User.query.get(user_id)
     db.session.delete(user)
     db.session.commit()
     return redirect(url_for('users_get'))
