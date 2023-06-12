@@ -7,8 +7,10 @@
 <body>
     <h1>追加フォーム</h1>
     <form action="/users" method="POST">
+        <div>名前:<input name="user_name"></input></div>docker compose run app flask db migrate -m "Add password and mail"
+        <div>メールアドレス:<input name="mail"></input></div>
+        <div>パスワード:<input type="password" name="password"></input></div>
         <div>
-            名前:<input name="user_name"></input>
             <input type="submit" value="送信">
             <input type="reset" value="取消">
         </div>
