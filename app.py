@@ -8,7 +8,7 @@ app = Flask(__name__)
 def index_get():
     return render_template('index.html')
 
-@app.route("/5431" methods=['GET'])
+@app.route("/takeuchi", methods=['GET'])
 def takeuchi_get():
     return render_template('5431.html')
 
